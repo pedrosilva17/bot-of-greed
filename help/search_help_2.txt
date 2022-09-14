@@ -1,0 +1,15 @@
+**level_rank** - Filter by level/rank.
+**race** - Filter by race which is officially called Type (capital T). This is also used for Spell/Trap cards. One or more of the following: 'continuous', 'zombie', 'fiend', 'normal', 'quick-play', 'rock', 'warrior', 'winged beast', 'spellcaster', 'beast', 'fairy', 'equip', 'field', 'fish', 'beast-warrior', 'thunder', 'machine', 'sea serpent', 'aqua', 'plant', 'dragon', 'reptile', 'counter', 'psychic', 'insect', 'pyro', 'dinosaur', 'wyrm', 'ritual', 'divine-beast', 'creator-god', 'cyberse', 'mai', 'pegasus', 'ishizu', 'joey', 'kaiba', 'yugi'.
+**attribute** - Filter by the card attribute.
+**link** - Filter by Link value.
+**link_markers** - Filter by Link Markers. One or more of the following: 'Top', 'Bottom', 'Left', 'Right', 'Bottom-Left', 'Bottom-Right', 'Top-Left', 'Top-Right'.
+**scale** - Filter by Pendulum Scale value.
+**sort_by** - Sort the order of the cards by one of the following parameters: (atk, def, name, type, level, id, new).
+
+You can pass multiple comma separated values to these parameters: Type, Race, Attribute, Link Markers.
+
+You can also use the following equation symbols for attack, defense, level_rank, link, link_markers and scale:
+"lt" (less than), "lte" (less than or equal to), "gt" (greater than), "gte" (greater than or equal to).
+
+Examples: `/search attack: lt2500` (attack is less than 2500), `/search defense: gte2000` (defense is greater than or equal to 2000),
+`/search level_rank: lte8` (level/rank is less than or equal to 8).

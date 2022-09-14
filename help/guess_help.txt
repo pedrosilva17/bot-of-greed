@@ -1,0 +1,2 @@
+I will give you the description or the artwork of a random card, depending on your choice, defaulting to the former. Your job is to guess which one it is based on the text/image within 5 tries and under 90 seconds. At any point during that time, you can click the 'hint' button and I will give you the first letter of each word that composes the card's name, the number of letters in each word and the card's type. If you can't figure it out, type "quit" and the game will end.
+Good luck!
