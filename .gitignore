@@ -129,8 +129,11 @@ dmypy.json
 .pyre/
 
 # project specific
-artworks/
-output/
+artworks/*
+output/card_1.jpg
+output/card_2.jpg
+output/two_cards.jpg
 emojis/
 .idea/
 todo.txt
+!artworks/README.md
