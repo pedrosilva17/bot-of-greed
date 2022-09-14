@@ -5,6 +5,10 @@ import os
 
 
 def get_all_artworks():
+    """
+    Download all the available artworks and save them locally in the "artworks" folder. Skips all cards that don't have
+    an artwork stored and displays their names in the console.
+    """
     broken_id_list = []
     request = requests.get("https://db.ygoprodeck.com/api/v7/cardinfo.php?").json()
     counter = 0
