@@ -1,15 +1,18 @@
-**level_rank** - Filter by level/rank.
-**race** - Filter by race which is officially called Type (capital T). This is also used for Spell/Trap cards. One or more of the following: 'continuous', 'zombie', 'fiend', 'normal', 'quick-play', 'rock', 'warrior', 'winged beast', 'spellcaster', 'beast', 'fairy', 'equip', 'field', 'fish', 'beast-warrior', 'thunder', 'machine', 'sea serpent', 'aqua', 'plant', 'dragon', 'reptile', 'counter', 'psychic', 'insect', 'pyro', 'dinosaur', 'wyrm', 'ritual', 'divine-beast', 'creator-god', 'cyberse', 'mai', 'pegasus', 'ishizu', 'joey', 'kaiba', 'yugi'.
-**attribute** - Filter by the card attribute.
+**level** - Filter by level.
+**rank** - Filter by rank, or the XYZ version of level.
+**subtype** - Filter by subtype which is officially called Type (capital T), this is also used for Spell/Trap cards: 'Continuous', 'Zombie', 'Fiend', 'Normal', 'Quick-Play', 'Rock', 'Warrior', 'Winged Beast', 'Spellcaster', 'Beast', 'Fairy', 'Equip', 'Field', 'Fish', 'Beast-Warrior', 'Thunder', 'Machine', 'Sea Serpent', 'Aqua', 'Plant', 'Dragon', 'Reptile', 'Counter', 'Psychic', 'Insect', 'Pyro', 'Dinosaur', 'Wyrm', 'Ritual', 'Divine-Beast', 'Creator-God', 'Cyberse'.
+**attribute** - Filter by card attribute.
 **link** - Filter by Link value.
-**link_markers** - Filter by Link Markers. One or more of the following: 'Top', 'Bottom', 'Left', 'Right', 'Bottom-Left', 'Bottom-Right', 'Top-Left', 'Top-Right'.
+**link_markers** - Filter by Link Markers: `'Top', 'Bottom', 'Left', 'Right', 'Bottom-Left', 'Bottom-Right', 'Top-Left', 'Top-Right'`. You can pass multiple comma separated values.
 **scale** - Filter by Pendulum Scale value.
-**sort_by** - Sort the order of the cards by one of the following parameters: (atk, def, name, type, level, id, new).
 
-You can pass multiple comma separated values to these parameters: Type, Race, Attribute, Link Markers.
+In case there are multiple cards returned, these parameters can organize the output:
 
-You can also use the following equation symbols for attack, defense, level_rank, link, link_markers and scale:
-"lt" (less than), "lte" (less than or equal to), "gt" (greater than), "gte" (greater than or equal to).
+**sort** - Sort the order of the cards by one of the available parameters.
+**order** - Choose the sorting order of the cards.
 
-Examples: `/search attack: lt2500` (attack is less than 2500), `/search defense: gte2000` (defense is greater than or equal to 2000),
-`/search level_rank: lte8` (level/rank is less than or equal to 8).
+Some notes:
+
+- Filtering by Link Markers will give you cards that have every specified marker or more.
+- You can use the following notation for attack, defense, level, rank, link and scale: "lt" (less than), "lte" (less than or equal to), "gt" (greater than), "gte" (greater than or equal to).
+Examples: `/search attack: lt2500` (attack is less than 2500), `/search defense: gte2000` (defense is greater than or equal to 2000), `/search level: lte8` (level is less than or equal to 8).

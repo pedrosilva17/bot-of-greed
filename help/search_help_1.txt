@@ -1,9 +1,11 @@
-Adapted version of the filter list taken from the [YGOPRODeck Database API guide](https://db.ygoprodeck.com/api-guide/):
+Search any card(s) you want, filtering by a multitude of parameters, if necessary.
 
 The following parameters can be passed:
 
-**name** - Filter by name (or some of it). The more you specify correctly, the more you narrow the possible results. Always returns *a single card* when successful.
-**name_multi** - Similar to the name filter, but may return more than 1 card. For example `/search name_multi: Magician` to search and list *all* cards with "Magician" in the name. The spelling is less forgiving, though.
-**type** - Filter by card type, one or more of the following: `'Skill Card', 'Spell Card', 'Trap Card', 'Normal Monster', 'Normal Tuner Monster', 'Effect Monster', 'Tuner Monster', 'Flip Monster', 'Flip Effect Monster', 'Flip Tuner Effect Monster', 'Spirit Monster', 'Union Effect Monster', 'Gemini Monster', 'Pendulum Effect Monster', 'Pendulum Normal Monster', 'Pendulum Tuner Effect Monster', 'Ritual Monster', 'Ritual Effect Monster', 'Toon Monster', 'Fusion Monster', 'Synchro Monster', 'Synchro Tuner Monster', 'Synchro Pendulum Effect Monster', 'XYZ Monster', 'XYZ Pendulum Effect Monster', 'Link Monster', 'Pendulum Flip Effect Monster', 'Pendulum Effect Fusion Monster', 'Token'`.
+**name** - Filter by card name (or some of it).
+**beta_name** - Filter by card beta/early name. 
+**name_multi** - Similar to the name filter, but may return more than 1 card. For example `/search name_multi: Magician` to search and list *all* cards with "Magician" in the name.
+**card_type** - Filter by card type: `'Skill Card', 'Spell Card', 'Trap Card', 'Normal Monster', 'Normal Tuner Monster', 'Effect Monster', 'Tuner Monster', 'Flip Monster', 'Flip Effect Monster', 'Flip Tuner Effect Monster', 'Spirit Monster', 'Union Effect Monster', 'Gemini Monster', 'Pendulum Effect Monster', 'Pendulum Normal Monster', 'Pendulum Tuner Effect Monster', 'Ritual Monster', 'Ritual Effect Monster', 'Toon Monster', 'Fusion Monster', 'Synchro Monster', 'Synchro Tuner Monster', 'Synchro Pendulum Effect Monster', 'XYZ Monster', 'XYZ Pendulum Effect Monster', 'Link Monster', 'Pendulum Flip Effect Monster', 'Pendulum Effect Fusion Monster', 'Token'`.
+**archetype** - Filter by card archetype. Note that these aren't always correct and some cards are missing their archetype.
 **attack** - Filter by attack value.
-**defense** - Filter by defense value.)
+**defense** - Filter by defense value.
