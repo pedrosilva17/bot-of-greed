@@ -130,6 +130,8 @@ dmypy.json
 
 # project specific
 artworks/*
+card_images/*
+!artworks/README.md
 output/card_1.jpg
 output/card_2.jpg
 output/two_cards.jpg
@@ -137,3 +139,5 @@ emojis/
 .idea/
 todo.txt
 !artworks/README.md
+!card_images/README.md
+card-database.db
