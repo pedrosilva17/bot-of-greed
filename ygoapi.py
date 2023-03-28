@@ -1,5 +1,65 @@
+import json
+import sqlite3
+
 import requests
 from fuzzywuzzy import process
+
+import constants
+
+
+def setup():
+    """
+    Writes the json data obtained from the API requests into a file, and populates the database with it.
+    """
+    request = requests.get("https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes").json()
+    # with open("cards.json", "w") as file:
+    #    json.dump(request, file)
+    connection = sqlite3.connect("card-database.db")
+    cursor = connection.cursor()
+    sql_file = open("card-database.sql")
+    sql_commands = sql_file.read()
+    cursor.executescript(sql_commands)
+    card_count = 0
+    for card in request['data']:
+        card_id = card['id']
+        card_count += 1
+        cursor.execute("INSERT INTO Cards('id') VALUES(?)", (card_id,))
+        print(card_count)
+        for parameter in card:
+            if parameter == 'id':
+                pass
+            elif parameter == 'race':
+                query_text = f"UPDATE Cards SET subtype = ? WHERE id = {card_id}"
+                cursor.execute(query_text, (card[parameter],))
+            elif parameter == 'level' and "XYZ" in card['type']:
+                query_text = f"UPDATE Cards SET rank = ? WHERE id = {card_id}"
+                cursor.execute(query_text, (card[parameter],))
+            else:
+                query_text = f"UPDATE Cards SET {parameter} = ? WHERE id = {card_id}"
+                try:
+                    match parameter:
+                        case 'card_prices':
+                            cursor.execute(query_text, (json.dumps(card[parameter][0]),))
+                        case 'misc_info':
+                            cursor.execute(query_text, (json.dumps(card[parameter][0]),))
+                            try:
+                                cursor.execute(f"UPDATE Cards SET beta_name = ? WHERE id = {card_id}",
+                                               (card[parameter][0]['beta_name'],))
+                            except KeyError:
+                                pass
+                        case 'linkmarkers':
+                            card[parameter].sort(key=constants.link_markers.index)
+                            cursor.execute(query_text, (", ".join(card[parameter]),))
+                        case 'card_images' | 'banlist_info':
+                            cursor.execute(query_text, (json.dumps(card[parameter]),))
+                        case _:
+                            cursor.execute(query_text, (card[parameter],))
+                except sqlite3.OperationalError:
+                    continue
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return
 
 
 def random_card():
@@ -11,8 +71,8 @@ def random_card():
     # Skill cards are boring.
     while random_request["type"] == "Skill Card":
         random_request = requests.get("https://db.ygoprodeck.com/api/v7/randomcard.php").json()
-    card = random_request["card_images"][0]["image_url"]
-    return {"card": card, "data": random_request}
+    card_image = random_request["card_images"][0]["image_url"]
+    return {"card": card_image, "data": random_request}
 
 
 def query(args):
@@ -60,6 +120,7 @@ def query(args):
             result = requests.get(link).json()
             if len(result["data"]) > 1:
                 result["data"] = [result["data"][0]]
+        print(result)
         return result
     except KeyError:
         return result
