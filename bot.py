@@ -1,16 +1,25 @@
+import asyncio
 import os
 import re
-import asyncio
 import time
-import constants
-import utils
-import ygoapi as ygo
+
 import disnake
-from dotenv import load_dotenv
+from Levenshtein import ratio
 from disnake import Intents
-from disnake.ui import Button, View
 from disnake.ext import commands
+from disnake.ui import Button, View
+from dotenv import load_dotenv
+
+import Embeds
+import constants
+import queries
+import utils
 from Paginate import CreatePaginator
+
+"""
+Rebuild card database with API call
+"""
+# ygo.setup()
 
 """
 Initializing bot permissions and global variables, loading token and startup confirmation message.
@@ -32,23 +41,19 @@ async def on_ready():
 
 @bot.slash_command(name="draw", description="Draw 2 cards, just like Pot of Greed.")
 async def draw(ctx):
-    """
-    Randomly fetches two card images and joins them together, displaying them in an embed.
-    Parameters:
-    ----------
-    :param ctx: The invocation context of the command.
-    """
-    await ctx.response.defer()
-    embed, file = utils.embed_builder(ctx=ctx, embed_type="Draw")
-    button = Button(label="Draw again", style=disnake.ButtonStyle.green, emoji="<:cards:973582121547485244>")
+    title = "Pot of Greed activates!"
+    embed = Embeds.DrawEmbedBuilder(title=title)
+    button = Button(label="Draw again", style=disnake.ButtonStyle.green,
+                    emoji=disnake.utils.get(ctx.guild.emojis, name="cards"))
+
+    async def redraw(interaction):
+        new_embed = Embeds.DrawEmbedBuilder(title=title)
+        await interaction.response.edit_message(embed=new_embed, file=new_embed.get_file(), view=view)
+
     view = View()
     view.add_item(button)
-    button.callback = draw
-    try:
-        await ctx.edit_original_message(embed=embed, file=file, view=view)
-    except disnake.errors.InteractionResponded:
-        await ctx.send(file=file, embed=embed, view=view)
-    return
+    button.callback = redraw
+    await ctx.send(embed=embed, file=embed.get_file(), view=view)
 
 
 @bot.slash_command(
@@ -64,7 +69,17 @@ async def info(ctx):
     :param ctx: The invocation context of the command.
     """
     global uptime
-    embed, file = utils.embed_builder(ctx=ctx, embed_type="Info", time=uptime)
+    title = "My name is Bot of Greed!"
+    description = """I am a Discord bot created by [Pedro Silva](https://github.com/pedrosilva17), \
+    that uses the [YGOPRODeck Database](https://db.ygoprodeck.com/) API to populate its database.
+    
+    **Author's note**: if you have any issues with the bot or would like to contribute to the project, \
+    click my name above to go to my Github page, where you can find my socials and the repository for \
+    this bot. Consider leaving a star on the repo if you enjoy it!
+    """
+    file = disnake.File("profile.png", filename="profile.png")
+
+    embed = Embeds.InfoEmbedBuilder(title=title, description=description, file=file, time=uptime)
     await ctx.send(embed=embed, file=file)
 
 
@@ -86,15 +101,25 @@ async def guess(ctx,
     - "Card Text": Guess the card through its description.
     - "Artwork": Guess the card through its artwork.
     """
+    """
     global in_game
     if in_game:
         await ctx.send("Hey, there's still a game in progress! Type 'quit' if you want to end it and then "
                        "start another.", ephemeral=True)
         return
+    """
     await ctx.response.defer()
     loading_emoji = disnake.utils.get(ctx.guild.emojis, name="level_spin")
     await ctx.send(f"Preparing the game... {loading_emoji}")
-    embed, file, name, card = utils.embed_builder(ctx=ctx, embed_type="Guess", subtype=mode)
+
+    title = "Guess the card!"
+    if mode == "Card Text":
+        thumb = disnake.File("artworks/artwork_81210420.jpg", "thumbnail.jpg")
+        embed = Embeds.GuessEmbedBuilder(title=title, color=constants.hat_purple, file=thumb, mode=mode)
+    else:
+        embed = Embeds.GuessEmbedBuilder(title=title, color=constants.hat_purple, mode=mode)
+    card = embed.get_card()
+    file = embed.get_file()
 
     try:
         button = Button(label="Hint", style=disnake.ButtonStyle.green, emoji=constants.emojis["red_question_mark"])
@@ -110,10 +135,10 @@ async def guess(ctx,
             :param inter: The interaction invoking this function (the click on the button).
             """
             hint = ""
-            hint_list = name.split()
+            hint_list = card["name"].split()
             for word in hint_list:
                 hint += word[0] + re.sub('[A-z]', '_ ', word[1:]) + ' '
-            embed.set_footer(text=f"Hint: {hint} | Type: {card['data']['type']}")
+            embed.set_footer(text=f"Hint: {hint} | Type: {card['type']}")
             await inter.response.edit_message(embed=embed, view=view)
             return
 
@@ -128,13 +153,13 @@ async def guess(ctx,
             while in_game:
                 answer = await bot.wait_for('message')
                 if not answer.author.bot and answer.channel == ctx.channel and answer.author.id == ctx.author.id:
-                    if name.lower() == answer.content.lower():
+                    if card["name"].lower() == answer.content.lower():
                         await answer.reply(f"{answer.author.mention} got it right! Well done.")
                         in_game = False
                         break
                     match answer.content.lower():
                         case "quit":
-                            await answer.reply(f"{answer.author.mention} ended the game. The answer is {name}.")
+                            await answer.reply(f"{answer.author.mention} ended the game. The answer is {card['name']}.")
                             in_game = False
                         case _:
                             tries -= 1
@@ -142,7 +167,7 @@ async def guess(ctx,
                                 case 1:
                                     await ctx.send(f"{answer.author.mention}, wrong! Last chance...")
                                 case 0:
-                                    await ctx.send(f"Game over! The answer is {name}.")
+                                    await ctx.send(f"Game over! The answer is {card['name']}.")
                                     in_game = False
                                 case _:
                                     await ctx.send(f"{answer.author.mention}, wrong! {tries} tries left.")
@@ -154,9 +179,49 @@ async def guess(ctx,
         await asyncio.wait_for(game_loop(), timeout=90)
 
     except asyncio.TimeoutError:
-        await ctx.send(f"Time's up! The answer is {name}.")
+        await ctx.send(f"Time's up! The answer is {card['name']}.")
         in_game = False
     return
+
+
+NAMES = queries.card_attribute_list("name")
+BETA_NAMES = queries.card_attribute_list("beta_name")
+TYPES = queries.card_attribute_list("type")
+SUBTYPES = queries.card_attribute_list("subtype")
+ARCHETYPES = queries.card_attribute_list("archetype")
+
+
+async def autocomp_names(inter: disnake.ApplicationCommandInteraction, _input: str):
+    if _input.strip() == "": return []
+    result = sorted([name for name in NAMES],
+                    key=lambda s: ratio(s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
+    return result[:25]
+
+
+async def autocomp_beta_names(inter: disnake.ApplicationCommandInteraction, _input: str):
+    if _input.strip() == "": return []
+    result = sorted([name for name in BETA_NAMES],
+                    key=lambda s: ratio(s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
+    return result[:25]
+
+
+async def autocomp_types(inter: disnake.ApplicationCommandInteraction, _input: str):
+    if _input.strip() == "": return []
+    result = [card_type for card_type in TYPES if _input.lower() in card_type.lower()]
+    return result[:25]
+
+
+async def autocomp_subtypes(inter: disnake.ApplicationCommandInteraction, _input: str):
+    if _input.strip() == "": return []
+    result = [subtype for subtype in SUBTYPES if _input.lower() in subtype.lower()]
+    return result[:25]
+
+
+async def autocomp_archetypes(inter: disnake.ApplicationCommandInteraction, _input: str):
+    if _input.strip() == "": return []
+    result = sorted([archetype for archetype in ARCHETYPES],
+                    key=lambda s: ratio(s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
+    return result[:25]
 
 
 @bot.slash_command(
@@ -164,66 +229,77 @@ async def guess(ctx,
     description="Search for cards using multiple filters.",
 )
 async def search(ctx,
-                 name: str = commands.Param(default=None, name="name", description="Filter by name (one card)."),
+                 name: str = commands.Param(default=None, name="name", description="Filter by name (one card).",
+                                            autocomplete=autocomp_names),
+                 beta_name: str = commands.Param(default=None, name="beta_name",
+                                                 description="Filter by beta (old) name (one card).",
+                                                 autocomplete=autocomp_beta_names),
                  name_multi: str = commands.Param(default=None, name="name_multi",
                                                   description="Filter by name (one or more cards)."),
-                 _type: str = commands.Param(default=None, name="type", description="Filter by card type."),
-                 race: str = commands.Param(default=None, name="race", description="Filter by race."),
+                 archetype: str = commands.Param(default=None, name="archetype",
+                                                 description="Filter by card archetype.",
+                                                 autocomplete=autocomp_archetypes),
+                 card_type: str = commands.Param(default=None, name="type", description="Filter by card type.",
+                                                 autocomplete=autocomp_types),
+                 subtype: str = commands.Param(default=None, name="subtype", description="Filter by card subtype.",
+                                               autocomplete=autocomp_subtypes),
                  attribute: str = commands.Param(default=None, name="attribute",
-                                                 description="Filter by card attribute."),
+                                                 description="Filter by card attribute.",
+                                                 choices=queries.card_attribute_list("attribute")),
                  attack: str = commands.Param(default=None, name="attack", description="Filter by attack points."),
                  defense: str = commands.Param(default=None, name="defense", description="Filter by defense points."),
-                 level_rank: str = commands.Param(default=None, name="level_rank", description="Filter by level/rank."),
+                 level: str = commands.Param(default=None, name="level", description="Filter by level."),
+                 rank: str = commands.Param(default=None, name="rank", description="Filter by rank."),
+                 scale: str = commands.Param(default=None, name="scale", description="Filter by Pendulum Scale value."),
                  link: str = commands.Param(default=None, name="link", description="Filter by link value."),
                  link_marker: str = commands.Param(default=None, name="link_markers",
                                                    description="Filter by link markers."),
-                 scale: str = commands.Param(default=None, name="scale", description="Filter by Pendulum Scale value."),
-                 sort: str = commands.Param(default=None, name="sort_by", description="Sort the results in case more "
-                                                                                      "than one card is found.",
-                                            choices=["Attack", "Defense", "Name", "Type", "Level", "ID", "New",
-                                                     "Relevance"]),
+                 sort: str = commands.Param(default="Name", name="sort_by",
+                                            description="Sort the results in case more than one card is found. "
+                                                        "Defaults to name.",
+                                            choices=list(constants.short_terms.keys())[:-2]),
+                 order: str = commands.Param(default="Ascending", name="order",
+                                             description="Choose sorting order. Defaults to ascending order.",
+                                             choices=["Ascending", "Descending"]),
                  ):
     """
-    Searches the database for cards, using a variety of filters and sorting options, and calls an embed generator
-    function to display the results in a user-friendly and appealing manner.
+    Searches the database for cards, using a variety of filters and sorting options, and displays the results
+    in a user-friendly and appealing manner, using an embed.
     Parameters:
     ----------
     :param ctx: The invocation context of the command.
-    :param name: Name to filter with, that can show at most one card.
+    :param name: Name to filter with.
+    :param beta_name: Old/Beta name to filter with.
     :param name_multi: Name to filter with, that can show one or more cards (assuming there are no errors).
-    :param _type: Card type(s) to filter with.
-    :param race: Card "race(s)" to filter with.
-    :param attribute: Card attribute(s) to filter with.
+    :param archetype: Card archetype to filter with (not always accurate, some cards are missing their archetypes).
+    :param card_type: Card type to filter with.
+    :param subtype: Card "sybtype" to filter with.
+    :param attribute: Card attribute to filter with.
     :param attack: Attack value to filter with.
     :param defense: Defense value to filter with.
-    :param level_rank: Level/rank value to filter with.
+    :param level: Level value to filter with.
+    :param rank: Rank value to filter with.
     :param link: Link value to filter with.
     :param link_marker: Link marker(s) to filter with.
     :param scale: Pendulum scale value to filter with.
-    :param sort: Parameter to sort by.
+    :param sort: Parameter to sort by. Defaults to name.
+    :param order: Order to sort by (ascending/descending). Defaults to ascending order.
     """
-    loading_emoji = disnake.utils.get(ctx.guild.emojis, name="level_spin")
-    await ctx.send(f"Searching... {loading_emoji}")
-    filters = {"name": name, "fname": name_multi, "type": _type, "race": race, "attribute": attribute, "atk": attack,
-               "def": defense, "level": level_rank, "link": link, "linkmarker": link_marker, "scale": scale, "sort": sort}
-    response = ygo.query(filters)
-    embed, file = utils.embed_builder(ctx=ctx, embed_type="Search", response=response, subtype="Card")
-
-    """
-    Checks to verify the type of the variable "embed": Error, single embed or list of embeds.
-    """
-    if embed == "err":
-        embed = disnake.Embed(title="An error has occurred!", description=response["error"])
-        await ctx.edit_original_message(content="No luck...", embed=embed)
-    elif isinstance(embed, disnake.Embed):
-        if not file:
-            await ctx.edit_original_message(content="Found it!", embed=embed)
-        else:
-            await ctx.edit_original_message(content="Found it!", embed=embed, file=file)
+    await ctx.response.defer()
+    parameters = {"name": name, "beta_name": beta_name, "name_multi": name_multi, "archetype": archetype,
+                  "type": card_type, "subtype": subtype,
+                  "attribute": attribute, "atk": attack, "def": defense, "level": level, "rank": rank, "scale": scale,
+                  "linkval": link, "linkmarkers": link_marker, "sort": sort, "order": order}
+    response = queries.query(parameters)
+    # embed, file = utils.embed_builder(ctx=ctx, embed_type="Search", response=response, subtype="Card")
+    embed = utils.search_wrapper(ctx, response)
+    if type(embed) != list:
+        file = embed.get_file()
+        await ctx.send(embed=embed, file=file)
     else:
-        author_id = ctx.author.id
-        view = CreatePaginator(ctx, embed, author_id, len(embed))
-        await ctx.edit_original_message(content="Here's a list of the results.", embed=embed[0], view=view)
+        author = ctx.author.id
+        view = CreatePaginator(ctx=ctx, embeds=embed, author=author, size=len(embed))
+        await ctx.send(embed=embed[0], view=view)
     return
 
 
@@ -244,15 +320,34 @@ async def guide(ctx,
     """
     match command:
         case "Guess":
-            embed, file = utils.embed_builder(ctx=ctx, embed_type="Guess", subtype="Guide")
+            title = "Minigame: Guess"
+            help_text = open('help/guess_help.txt', 'r').read().rstrip('\n')
+            file = disnake.File("artworks/artwork_81210420.jpg", filename="help_image.jpg")
+            embed = Embeds.HelpEmbedBuilder(title=title, description=help_text, color=constants.hat_purple, file=file)
             await ctx.send(embed=embed, file=file)
             return
         case "Search":
-            embed, file = utils.embed_builder(ctx=ctx, embed_type="Search", subtype="Guide")
-            author_id = ctx.author.id
-            view = CreatePaginator(ctx, embed, author_id, len(embed), False)
-            await ctx.send(embed=embed[0], file=file, view=view)
+            title = "Command: Search"
+            file = disnake.File("artworks/artwork_74191528.jpg", filename="help_image.jpg")
+            embeds = []
+            page_count = 2
+            for page_num in range(1, 3):
+                help_text = open(f'help/search_help_{page_num}.txt', 'r').read().rstrip('\n')
+                embed = Embeds.HelpEmbedBuilder(title=title, description=help_text, color=constants.fate_blue,
+                                                file=file, page_num=page_num, page_count=page_count)
+                embeds.append(embed)
+            author = ctx.author.id
+            view = CreatePaginator(ctx=ctx, embeds=embeds, author=author, size=len(embeds), has_dropdown=False)
+            await ctx.send(embed=embeds[0], file=file, view=view)
             return
+
+
+@bot.slash_command(name="test", description="This is a test.")
+async def test_embed(ctx):
+    global uptime
+    file = disnake.File("profile.png", filename="profile.png")
+    embed = Embeds.InfoEmbedBuilder(title="Test", description="This is a test.", time=uptime, file=file)
+    await ctx.send(embed=embed, file=file)
 
 
 bot.run(token)
