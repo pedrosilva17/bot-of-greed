@@ -23,30 +23,31 @@ emojis = {
     "bottom-right": "\U00002198"
 }
 
-attributes = ["Archetype", "Attribute", "Type", "Subtype", "Level", "Rank", "Pendulum Scale", "Link Value",
-              "Link Markers", "Attack", "Defense"]
+attributes = ["Archetype", "Attribute", "Type", "Subtype", "Level", "Rank",
+              "Pendulum Scale", "Link Value", "Link Markers", "Attack", "Defense"]
 
-link_markers = ['Left', 'Top-Left', 'Top', 'Top-Right', 'Right', 'Bottom-Left', 'Bottom', 'Bottom-Right']
+link_markers = ['Left', 'Top-Left', 'Top', 'Top-Right',
+                'Right', 'Bottom-Left', 'Bottom', 'Bottom-Right']
 
 link_marker_emojis = {k: emojis[k.lower()] for k in link_markers}
 
-card_types = ['Skill Card', 'Spell Card', 'Trap Card', 'Normal Monster', 'Normal Tuner Monster', 'Effect Monster',
-              'Tuner Monster', 'Flip Monster',
-              'Flip Effect Monster', 'Pendulum Effect Monster', 'Pendulum Normal Monster',
-              'Pendulum Tuner Effect Monster', 'Ritual Monster',
-              'Ritual Effect Monster', 'Fusion Monster', 'Synchro Monster', 'Synchro Tuner Monster',
-              'Synchro Pendulum Effect Monster',
-              'XYZ Monster', 'XYZ Pendulum Effect Monster', 'Link Monster', 'Pendulum Flip Effect Monster',
-              'Pendulum Effect Fusion Monster', 'Token']
+card_types = [
+    'Skill Card', 'Spell Card', 'Trap Card', 'Normal Monster', 'Normal Tuner Monster',
+    'Effect Monster', 'Tuner Monster', 'Flip Monster', 'Flip Effect Monster',
+    'Pendulum Effect Monster', 'Pendulum Normal Monster', 'Pendulum Tuner Effect Monster',
+    'Ritual Monster', 'Ritual Effect Monster', 'Fusion Monster', 'Synchro Monster',
+    'Synchro Tuner Monster', 'Synchro Pendulum Effect Monster', 'XYZ Monster',
+    'XYZ Pendulum Effect Monster', 'Link Monster', 'Pendulum Flip Effect Monster',
+    'Pendulum Effect Fusion Monster', 'Token']
 
-regex_comparable_patterns = {r'\bgte[0-9]+$': '>=', r'\bgt[0-9]+$': '>', r'\blte[0-9]+$': '<=', r'\blt[0-9]+$': '<',
-                             r'\b[0-9]+$': '='}
+regex_comparable_patterns = {r'\bgte[0-9]+$': '>=', r'\bgt[0-9]+$': '>',
+                             r'\blte[0-9]+$': '<=', r'\blt[0-9]+$': '<', r'\b[0-9]+$': '='}
 
-short_terms = {"ID": "id", "Name": "name", "Archetype": "archetype", "Type": "type", "Subtype": "subtype",
-               "Attribute": "attribute", "Attack": "atk",
-               "Defense": "def", "Level": "level", "Rank": "rank", "Link Value": "linkval",
-               "Link Markers": "linkmarkers", "Pendulum Scale": "scale",
-               "Sort": "sort", "Order": "order"}
+short_terms = {"ID": "id", "Name": "name", "Archetype": "archetype", "Type": "type",
+               "Subtype": "subtype", "Attribute": "attribute", "Attack": "atk", "Defense": "def",
+               "Level": "level", "Rank": "rank", "Link Value": "linkval",
+               "Link Markers": "linkmarkers", "Pendulum Scale": "scale", "Sort": "sort",
+               "Order": "order"}
 long_terms = {v: k for k, v in short_terms.items()}
 
 greed_green = 0x0b7520

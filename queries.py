@@ -128,20 +128,24 @@ def card_attribute_list(attribute: str) -> list:
     query_text = f"SELECT {attribute} FROM Cards"
 
     # Avoid the (insert character name here) subtypes from Speed Duel Skill Cards
-    if attribute == "subtype": query_text += " WHERE type != 'Skill Card'"
+    if attribute == "subtype":
+        query_text += " WHERE type != 'Skill Card'"
 
     cursor.execute(query_text)
     data = cursor.fetchall()
     connection_close(connection, cursor)
     attribute_set = []
-    (attribute_set.append(data[i][attribute]) for i in range(len(data) - 1) if
-     data[i][attribute] not in attribute_set and data[i][attribute] is not None)
+    for i in range(len(data) - 1):
+        if data[i][attribute] is not None:
+            attribute_set.append(data[i][attribute])
+    # Remove duplicates
+    attribute_set = list(dict.fromkeys(attribute_set))
     attribute_set.sort()
     return attribute_set
 
 
-def query_parameter(parameters: dict, parameter: str, key_list: list, parameter_list: list, query_text: str) -> Tuple[
-    list, list, str]:
+def query_parameter(parameters: dict, parameter: str, key_list: list, parameter_list: list,
+                    query_text: str) -> Tuple[list, list, str]:
     """Progressively build the query string according to the parameters set by the user.
     Needs severe refactoring...
 
@@ -164,8 +168,14 @@ def query_parameter(parameters: dict, parameter: str, key_list: list, parameter_
             key_list.append("name")
             parameter_list.append('%' + parameters[parameter] + '%')
             query_text += "Name LIKE ? AND "
+        case "archetype":
+            key_list.append("archetype")
+            pattern = f"(^|, ){re.escape(parameters[parameter])}(,|$)"
+            parameter_list.append(pattern)
+            query_text += "Archetype REGEXP ? AND "
         case "linkmarkers":
-            sorted_markers = [param.lower().replace(" ", "") for param in parameters[parameter].split(",")]
+            sorted_markers = [param.lower().replace(" ", "")
+                              for param in parameters[parameter].split(",")]
             try:
                 sorted_markers.sort(key=[marker.lower() for marker in constants.link_markers].index)
             except ValueError:
@@ -215,8 +225,8 @@ def query(parameters: dict) -> (list | str):
     for parameter in parameters:
         if parameters[parameter] is not None and parameter not in ["sort", "order"]:
             try:
-                key_list, parameter_list, query_text = query_parameter(parameters, parameter, key_list, parameter_list,
-                                                                       query_text)
+                key_list, parameter_list, query_text = query_parameter(
+                    parameters, parameter, key_list, parameter_list, query_text)
             except TypeError:
                 return error_message(parameters, query_text)
             if parameter == "name":

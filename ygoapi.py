@@ -1,5 +1,6 @@
 import json
 import sqlite3
+import time
 
 import requests
 from fuzzywuzzy import process
@@ -7,60 +8,27 @@ from fuzzywuzzy import process
 import constants
 
 
-def setup():
-    """
-    Writes the json data obtained from the API requests into a file, and populates the database with it.
-    """
-    request = requests.get("https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes").json()
-    # with open("cards.json", "w") as file:
-    #    json.dump(request, file)
-    connection = sqlite3.connect("card-database.db")
-    cursor = connection.cursor()
-    sql_file = open("card-database.sql")
-    sql_commands = sql_file.read()
-    cursor.executescript(sql_commands)
-    card_count = 0
-    for card in request['data']:
-        card_id = card['id']
-        card_count += 1
-        cursor.execute("INSERT INTO Cards('id') VALUES(?)", (card_id,))
-        print(card_count)
-        for parameter in card:
-            if parameter == 'id':
-                pass
-            elif parameter == 'race':
-                query_text = f"UPDATE Cards SET subtype = ? WHERE id = {card_id}"
-                cursor.execute(query_text, (card[parameter],))
-            elif parameter == 'level' and "XYZ" in card['type']:
-                query_text = f"UPDATE Cards SET rank = ? WHERE id = {card_id}"
-                cursor.execute(query_text, (card[parameter],))
-            else:
-                query_text = f"UPDATE Cards SET {parameter} = ? WHERE id = {card_id}"
-                try:
-                    match parameter:
-                        case 'card_prices':
-                            cursor.execute(query_text, (json.dumps(card[parameter][0]),))
-                        case 'misc_info':
-                            cursor.execute(query_text, (json.dumps(card[parameter][0]),))
-                            try:
-                                cursor.execute(f"UPDATE Cards SET beta_name = ? WHERE id = {card_id}",
-                                               (card[parameter][0]['beta_name'],))
-                            except KeyError:
-                                pass
-                        case 'linkmarkers':
-                            card[parameter].sort(key=constants.link_markers.index)
-                            cursor.execute(query_text, (", ".join(card[parameter]),))
-                        case 'card_images' | 'banlist_info':
-                            cursor.execute(query_text, (json.dumps(card[parameter]),))
-                        case _:
-                            cursor.execute(query_text, (card[parameter],))
-                except sqlite3.OperationalError:
-                    continue
-    connection.commit()
-    cursor.close()
-    connection.close()
-    return
-
+def save_all_archetypes():
+    headers = {
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/113.0'
+}   
+    request_1 = requests.get("https://yugipedia.com/api.php?action=query&list=categorymembers&cmtitle=Category:Archetypes&cmlimit=500&format=json", headers=headers).json()
+    
+    time.sleep(2)
+    
+    request_2 = requests.get(f"https://yugipedia.com/api.php?action=query&list=categorymembers&cmtitle=Category:Archetypes&cmcontinue={request_1['continue']['cmcontinue']}&cmlimit=500&format=json", headers=headers).json()
+    
+    archetype_list = [arch['title'] for arch in request_1['query']['categorymembers'] + request_2['query']['categorymembers'] if "Category:" not in arch['title']][1:]
+    
+    archetype_string = "\n".join(archetype_list)
+    
+    with open('archetypes.txt', 'w') as file:
+        file.write(archetype_string)
+    
+    with open('archetypes.txt', 'r') as file:
+        string = file.read()
+    print(string.split('\n'))
+    
 
 def random_card():
     """
@@ -124,3 +92,4 @@ def query(args):
         return result
     except KeyError:
         return result
+    

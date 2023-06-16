@@ -244,6 +244,7 @@ def search_wrapper(ctx, response):
         card_info = response[0]
         card_image_list = card_info["card_images"]
         found_artwork = False
+        emoji = None
         for i in range(0, len(card_image_list)):
             card_id = card_image_list[i]["id"]
             try:
@@ -253,6 +254,15 @@ def search_wrapper(ctx, response):
             except FileNotFoundError:
                 continue
         if not found_artwork:
+            for i in range(0, len(card_image_list)):
+                card_id = card_image_list[i]["id"]
+                try:
+                    file = disnake.File(f"card_images/{card_id}.jpg", filename=f"thumb_card.jpg")
+                    found_artwork = True
+                    break
+                except FileNotFoundError:
+                    continue
+        if not found_artwork:
             card_id = "back"
             file = disnake.File(f"artworks/artwork_{card_id}.jpg",
                                 filename=f"thumb_card.jpg")
@@ -261,7 +271,8 @@ def search_wrapper(ctx, response):
         for parameter in constants.attributes:
             short_attr = constants.short_terms[parameter]
             value = card_info.get(short_attr)
-            if value is None: continue
+            if value is None:
+                continue
             match parameter:
                 case "Attack" | "Defense":
                     try:
@@ -270,7 +281,8 @@ def search_wrapper(ctx, response):
                     except KeyError:
                         card_parameters += f"**{short_attr.upper()}**: {value} "
                 case "Link Markers":
-                    marker_emojis = "".join([constants.link_marker_emojis[marker] for marker in value.split(", ")])
+                    marker_emojis = "".join([constants.link_marker_emojis[marker]
+                                             for marker in value.split(", ")])
                     card_parameters += f"**{parameter}**: {marker_emojis}\n"
                 case _:
                     if parameter in ["Level", "Rank", "Pendulum Scale"]:
@@ -279,6 +291,9 @@ def search_wrapper(ctx, response):
                     else:
                         emoji = get(ctx.guild.emojis,
                                     name=str(value).lower().replace(" ", "_").replace("-", "_"))
+                    if parameter == "Archetype" and " (archetype)" in value:
+                        value = value.replace(" (archetype)", "")
+
                     card_parameters += f"**{parameter}**: {value} "
                     if emoji is not None:
                         card_parameters += f"{emoji} "
@@ -294,8 +309,10 @@ def search_wrapper(ctx, response):
             else:
                 formats += f'{_format}, '
         formats = formats[:-2]
-        embed = Embeds.SearchEmbedBuilder(title=card_info["name"], description=card_parameters, color=color, file=file,
-                                          response=card_info, formats=formats)
+        embed = Embeds.SearchEmbedBuilder(
+            title=card_info["name"],
+            description=card_parameters, color=color, file=file, response=card_info,
+            formats=formats)
         return embed
     else:
         pages = []
@@ -308,8 +325,9 @@ def search_wrapper(ctx, response):
                 title = ""
                 if i == 0:
                     title = f'Found {len(response)} results.'
-                embed = Embeds.SearchEmbedBuilder(title=title, response=response, page_num=page_count,
-                                                  max_pages=max_pages, cards_left=cards_left, single=False)
+                embed = Embeds.SearchEmbedBuilder(
+                    title=title, response=response, page_num=page_count, max_pages=max_pages,
+                    cards_left=cards_left, single=False)
                 page_count += 1
                 pages.append(embed)
                 cards_left -= page_max_results

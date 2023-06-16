@@ -14,12 +14,14 @@ import Embeds
 import constants
 import queries
 import utils
+import ygoapi as ygo
+from other_functions import setup
 from Paginate import CreatePaginator
 
 """
 Rebuild card database with API call
 """
-# ygo.setup()
+setup(get_card_images=True)
 
 """
 Initializing bot permissions and global variables, loading token and startup confirmation message.
@@ -28,7 +30,7 @@ in_game = False
 uptime = int(time.time())
 intents = Intents.default()
 intents.message_content = True
-bot = commands.InteractionBot(command_prefix="yg_", intents=intents)
+bot = commands.InteractionBot(intents=intents)
 
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
@@ -115,14 +117,16 @@ async def guess(ctx,
     title = "Guess the card!"
     if mode == "Card Text":
         thumb = disnake.File("artworks/artwork_81210420.jpg", "thumbnail.jpg")
-        embed = Embeds.GuessEmbedBuilder(title=title, color=constants.hat_purple, file=thumb, mode=mode)
+        embed = Embeds.GuessEmbedBuilder(
+            title=title, color=constants.hat_purple, file=thumb, mode=mode)
     else:
         embed = Embeds.GuessEmbedBuilder(title=title, color=constants.hat_purple, mode=mode)
     card = embed.get_card()
     file = embed.get_file()
 
     try:
-        button = Button(label="Hint", style=disnake.ButtonStyle.green, emoji=constants.emojis["red_question_mark"])
+        button = Button(label="Hint", style=disnake.ButtonStyle.green,
+                        emoji=constants.emojis["red_question_mark"])
         view = View()
         view.add_item(button)
 
@@ -192,35 +196,48 @@ ARCHETYPES = queries.card_attribute_list("archetype")
 
 
 async def autocomp_names(inter: disnake.ApplicationCommandInteraction, _input: str):
-    if _input.strip() == "": return []
-    result = sorted([name for name in NAMES],
-                    key=lambda s: ratio(s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
+    _input = re.escape(_input)
+    if _input.strip() == "":
+        return []
+    result = sorted([name for name in NAMES], key=lambda s: ratio(
+        s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
     return result[:25]
 
 
 async def autocomp_beta_names(inter: disnake.ApplicationCommandInteraction, _input: str):
-    if _input.strip() == "": return []
-    result = sorted([name for name in BETA_NAMES],
-                    key=lambda s: ratio(s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
+    _input = re.escape(_input)
+    if _input.strip() == "":
+        return []
+    result = sorted([name for name in BETA_NAMES], key=lambda s: ratio(
+        s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
     return result[:25]
 
 
 async def autocomp_types(inter: disnake.ApplicationCommandInteraction, _input: str):
-    if _input.strip() == "": return []
+    _input = re.escape(_input)
+    if _input.strip() == "":
+        return []
     result = [card_type for card_type in TYPES if _input.lower() in card_type.lower()]
     return result[:25]
 
 
 async def autocomp_subtypes(inter: disnake.ApplicationCommandInteraction, _input: str):
-    if _input.strip() == "": return []
+    _input = re.escape(_input)
+    if _input.strip() == "":
+        return []
     result = [subtype for subtype in SUBTYPES if _input.lower() in subtype.lower()]
     return result[:25]
 
 
 async def autocomp_archetypes(inter: disnake.ApplicationCommandInteraction, _input: str):
-    if _input.strip() == "": return []
-    result = sorted([archetype for archetype in ARCHETYPES],
-                    key=lambda s: ratio(s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
+    _input = re.escape(_input)
+    if _input.strip() == "":
+        return []
+    arch_list = set()
+    for archetype in ARCHETYPES:
+        arch_list.update(archetype.split(", "))
+    result = sorted([archetype for archetype in arch_list], key=lambda s: ratio(
+        s, _input) + utils.count_whole_words(_input, s.split(" ")), reverse=True)
     return result[:25]
 
 
@@ -286,10 +303,11 @@ async def search(ctx,
     :param order: Order to sort by (ascending/descending). Defaults to ascending order.
     """
     await ctx.response.defer()
-    parameters = {"name": name, "beta_name": beta_name, "name_multi": name_multi, "archetype": archetype,
-                  "type": card_type, "subtype": subtype,
-                  "attribute": attribute, "atk": attack, "def": defense, "level": level, "rank": rank, "scale": scale,
-                  "linkval": link, "linkmarkers": link_marker, "sort": sort, "order": order}
+    parameters = {
+        "name": name, "beta_name": beta_name, "name_multi": name_multi, "archetype": archetype,
+        "type": card_type, "subtype": subtype, "attribute": attribute, "atk": attack,
+        "def": defense, "level": level, "rank": rank, "scale": scale, "linkval": link,
+        "linkmarkers": link_marker, "sort": sort, "order": order}
     response = queries.query(parameters)
     # embed, file = utils.embed_builder(ctx=ctx, embed_type="Search", response=response, subtype="Card")
     embed = utils.search_wrapper(ctx, response)
@@ -323,7 +341,8 @@ async def guide(ctx,
             title = "Minigame: Guess"
             help_text = open('help/guess_help.txt', 'r').read().rstrip('\n')
             file = disnake.File("artworks/artwork_81210420.jpg", filename="help_image.jpg")
-            embed = Embeds.HelpEmbedBuilder(title=title, description=help_text, color=constants.hat_purple, file=file)
+            embed = Embeds.HelpEmbedBuilder(
+                title=title, description=help_text, color=constants.hat_purple, file=file)
             await ctx.send(embed=embed, file=file)
             return
         case "Search":
@@ -333,11 +352,13 @@ async def guide(ctx,
             page_count = 2
             for page_num in range(1, 3):
                 help_text = open(f'help/search_help_{page_num}.txt', 'r').read().rstrip('\n')
-                embed = Embeds.HelpEmbedBuilder(title=title, description=help_text, color=constants.fate_blue,
-                                                file=file, page_num=page_num, page_count=page_count)
+                embed = Embeds.HelpEmbedBuilder(
+                    title=title, description=help_text, color=constants.fate_blue, file=file,
+                    page_num=page_num, page_count=page_count)
                 embeds.append(embed)
             author = ctx.author.id
-            view = CreatePaginator(ctx=ctx, embeds=embeds, author=author, size=len(embeds), has_dropdown=False)
+            view = CreatePaginator(ctx=ctx, embeds=embeds, author=author,
+                                   size=len(embeds), has_dropdown=False)
             await ctx.send(embed=embeds[0], file=file, view=view)
             return
 
@@ -346,7 +367,8 @@ async def guide(ctx,
 async def test_embed(ctx):
     global uptime
     file = disnake.File("profile.png", filename="profile.png")
-    embed = Embeds.InfoEmbedBuilder(title="Test", description="This is a test.", time=uptime, file=file)
+    embed = Embeds.InfoEmbedBuilder(
+        title="Test", description="This is a test.", time=uptime, file=file)
     await ctx.send(embed=embed, file=file)
 
 
