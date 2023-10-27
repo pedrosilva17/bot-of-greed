@@ -185,12 +185,9 @@ class SearchEmbedBuilder(EmbedBuilder):
             super().set_footer(text=f"Page {page_num}/{max_pages}")
 
     def __parse_card_text(self, card_text, card_type):
-        print(card_text)
         headers = re.findall(r"\[ (.*?) \]", card_text)
         bodies = re.findall(r"\][\r|\n|\s]*([^\[]*)", card_text)
         bodies = list(map(methodcaller("strip", "\r\n"), bodies))
-        print(headers)
-        print(bodies)
         if len(bodies) > len(headers):
             joined_body = "\n".join(bodies[len(headers) - 1 :])
             bodies = [bodies[0], joined_body]
