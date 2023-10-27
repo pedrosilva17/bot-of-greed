@@ -21,9 +21,9 @@ Amorphage
 Ancient (archetype)
 Ancient Gear
 Ancient Gear (anime)
+Ancient Gear Golem (archetype)
 Ancient Warriors
 Angel (archetype)
-Anti
 Apoqliphort
 Appliancer
 Aquaactress
@@ -34,30 +34,26 @@ Archfiend
 Armatos Legio
 Armed Dragon
 Armor Canine
+Armored Xyz (archetype)
 Aroma
 Artifact
 Artorigus
-Assassin
 Assault Blackwing
 Astral (archetype)
 Atlandis
 Atlantean
-Attack (archetype)
 Attraction
 B.E.S.
 Baby
 Bamboo Sword
 Barbaros
-Barian (archetype)
 Barian's
 Batteryman
 Battleguard
 Battlewasp
 Battlin' Boxer
 Battlin' Boxing
-Beast's Battle
 Beastborg
-Beetrooper
 Black Luster Soldier (archetype)
 Blackwing
 Blackwing Tamer
@@ -71,15 +67,14 @@ Bujin
 Burning Abyss
 Buster Blader (archetype)
 Butterfly
-Butterspy
 Bystial
 C (archetype)
-Carrier
 Cat
 Cat Girl (archetype)
 Celestial
 Celtic Guard
 Cenozoic
+Centurion
 Champion
 Change
 Chaos
@@ -90,7 +85,6 @@ Chronomaly
 Chrysalis
 Cicada
 Cipher
-Cipher Dragon
 Clear
 Clear Wing
 Clock Knight
@@ -99,7 +93,6 @@ Code Talker (archetype)
 Codebreaker
 Comics Hero
 Constellar
-Cookpal
 Counter (archetype)
 Crusadia
 Crystal
@@ -113,42 +106,32 @@ Cyber Angel
 Cyber Dragon (archetype)
 Cyberdark
 Cyberdark (Spell/Trap archetype)
-Cybernetic
 Cynet
-D-Scale
 D/D
 D/D/D
 Danger!
 Dante
-Dark Contract
 Dark Magician (archetype)
 Dark Magician Girl (archetype)
 Dark Mummy
 Dark Scorpion
-Dark Tuner (archetype)
 Dark World
 Darklord
-Darkness (archetype)
 Dart
 Deskbot
 Despia
 Destiny HERO
 Destruction Sword
-Dice (archetype)
+Diabellstar
 Dinomist
 Dinomorphia
 Dinowrestler
-Dizzy
 Djinn
 Dododo
 Dog
 Dogmatika
-Doll
 Doll Monster
 Doll Part
-Doodle
-Doodle Beast
-Doodlebook
 Dracoslayer
 Dracoverlord
 Dragonmaid
@@ -161,12 +144,10 @@ Dual Avatar
 Duel Dragon
 Duston
 Dyson
-Earth (archetype)
 Earthbound
 Earthbound Immortal
 Earthbound Servant
 Eco Spell
-Edge Imp
 Elder Entity
 Eldlich
 Eldlixir
@@ -200,7 +181,6 @@ Firewall (archetype)
 Fishborg
 Flamvell
 Floowandereeze
-Flower Cardian
 Fluffal
 Forbidden (archetype)
 Forbidden Beast
@@ -209,7 +189,6 @@ Forest (archetype)
 Fortune Fairy
 Fortune Lady
 Fossil
-Frightfur
 Frog
 Fur Hire
 Fusion (archetype)
@@ -224,7 +203,6 @@ Galaxy-Eyes
 Galaxy-Eyes Tachyon Dragon
 Gandora (archetype)
 Gate Guardian (archetype)
-Geargia
 Geargiano (archetype)
 Gem-
 Gem-Knight
@@ -238,6 +216,7 @@ Gishki
 Gladiator Beast
 Go-D/D
 Goblin
+Goblin Rider
 Gogogo
 Gold Pride
 Golden Land
@@ -249,7 +228,6 @@ Granel
 GranSolfachord
 Gravekeeper's
 Graydle
-Guard
 Guardian
 Gunkan
 Gusto
@@ -258,21 +236,20 @@ Hand (archetype)
 Harpie
 Hazy
 Hazy Flame
+Heart
 Heart Monster
 Heavy Industry
 Helios
-Helixx
 Hell
 Heraldic
 Heraldic Beast
 Heraldry
 HERO
 Heroic
-Heroic Challenger
-Heroic Champion
 Hi-Speedroid
 Hieratic
 Hole
+Horus
 Horus the Black Flame Dragon
 Hunder
 Hydradrive
@@ -288,12 +265,10 @@ Infernoid
 Infestation
 Infinitrack
 Inmato (archetype)
-Inu
 Invoked
 Inzektor
 Iron Chain
 Ivy
-Jester
 Jester Puppet
 Jinzo (archetype)
 Junk
@@ -302,7 +277,6 @@ Jurrac
 Jutte
 Kabuki Stage
 Kaiju
-Kairyu-Shin (archetype)
 Karakuri
 Kashtira
 Ki-sikil
@@ -315,6 +289,7 @@ Kozmo
 Krawler
 Kuriboh (archetype)
 Labrynth
+Labyrinth Wall (archetype)
 Lady of Lament
 Lamp
 Landstar
@@ -337,7 +312,6 @@ Madolche
 Magic Elf
 Magical Musket
 Magician
-Magician (manga)
 Magician Girl
 Magikey
 Magistus
@@ -366,6 +340,7 @@ Melffy
 Melodious
 Melodious Maestra
 Melodious Songstress
+Memento
 Mermail
 Mesozoic
 Metalfoes
@@ -378,7 +353,6 @@ Monarch
 Monarch (Spell/Trap archetype)
 Morphtronic
 Mosquito
-Motor
 Mystical Beast of the Forest
 Mystical Spirit of the Forest
 Mythical Beast
@@ -408,29 +382,24 @@ Nouvelles
 Number
 Number (Spell/Trap archetype)
 Number 10X
-Number 39: Utopia (archetype)
 Number C
 Number C10X
 Number C39
 Number C39: Utopia Ray (archetype)
 Number S
 Numeron
-Numeron Gate
-Numerounius
 Odd-Eyes
 Ogdoadic
 Ojama
-Old Entity
 Onomat
 Orcust
 Outer Entity
 P.U.N.K.
 Paleozoic
 Paleozoic (anime)
-Palladium
 Papillon
 Parasite
-Parshath
+Patissciel
 Pendulum (archetype)
 Pendulum Dragon
 Pendulumgraph
@@ -455,7 +424,6 @@ Prank-Kids
 Predap
 Predaplant
 Prediction Princess
-Priestess
 Prophecy
 PSY-Frame
 PSY-Framegear
@@ -468,7 +436,6 @@ R-Genex
 Raccoon
 Raidraptor
 Rainbow Bridge (archetype)
-Rank-Down-Magic
 Rank-Up-Magic
 Reactor
 Rebellion (archetype)
@@ -489,7 +456,6 @@ Rokket
 Roland (archetype)
 Rose
 Rose Dragon
-Royal Cookpal
 Runick
 S-Force
 Saber
@@ -497,7 +463,6 @@ Salamangreat
 Scareclaw
 Scrap
 Sea Stealth
-Seal
 Secret Six Samurai
 Seventh
 Shaddoll
@@ -506,15 +471,16 @@ Shark (series)
 Shien
 Shining
 Shiranui
-Shiranui Spectralsword (archetype)
+Silenforc
 Silent Magician (archetype)
 Silent Swordsman (archetype)
 Simorgh
+Sinful Spoils
 Sinister Doctrine
 Six Samurai
 Skiel
 Skiel Attack (archetype)
-Sky
+Skull Guardian (archetype)
 Sky Striker
 Sky Striker Ace
 Skyblaster
@@ -522,8 +488,8 @@ Skyscraper (archetype)
 Slime
 Smile
 Snake
+Snake-Eye
 Solfachord
-Speed Spell (archetype)
 Speedroid
 Spell Spice
 Spellbook
@@ -531,7 +497,6 @@ Sphere
 Sphinx
 Spice
 Spirit (archetype)
-Spirit Gem
 Spirit Message
 Spiritual Beast
 Spiritual Earth Art
@@ -543,33 +508,22 @@ Springans
 Sprout
 SPYRAL
 SPYRAL GEAR
-SPYRAL MISSION
 Star Seraph
 Stardust (archetype)
 Starry Knight
 Starship
-Starving Venemy
 Starving Venom
-Statue
-Stealth Kragen
 Steelswarm
 Stellarknight
-Stone
 Stormrider
-Strain
 Stray Cat (archetype)
 Subterror
 Subterror Behemoth
 Sunavalon
-Sunseed
-Sunvine
 Super Defense Robot
 Super Quant
-Super Quantal Mech Beast
 Super Quantum
-Superheavy
 Superheavy Samurai
-Superheavy Samurai Soul
 Supreme King
 Supreme King Dragon
 Supreme King Gate
@@ -595,10 +549,9 @@ Thunder Dragon (archetype)
 Time Thief
 Timelord
 Tindangle
+Tistina
 Toon
-Top
 Topologic
-Topologina
 Toy
 Toy (ARC-V archetype)
 Trap Hole (archetype)
@@ -607,7 +560,6 @@ Tri-Brigade
 Triamid
 Trickstar
 True Draco
-U.A.
 Ultimate Crystal
 Umbral Horror
 Unchained
@@ -619,26 +571,28 @@ Utopic Future
 V (archetype)
 V (GX archetype)
 Valkyrie
+Valmonica
 Vampire
 Vanquish Soul
 Vaylantz
+Veda
 Vehicroid
 Vendread
 Venom
-Vernusylph
 Vigilante
 Virtual World
 Virtual World Gate
+Visas
 Vision HERO
 Void
 Volcanic
 Vylon
-W
 War Rock
 Warrior (archetype)
 Watt
 Welcome Labrynth (archetype)
 White
+White Aura
 White Knight
 Wind-Up
 Windwitch
@@ -646,14 +600,12 @@ Winged Kuriboh (archetype)
 Wingman
 Wisel
 Wisel Attack (archetype)
-Wisel Guard (archetype)
-Wisel Top (archetype)
 Witchcrafter
 World Chalice
 World Legacy
 Worm
-X (archetype)
 X-Saber
+Xyz (archetype)
 Xyz Dragon
 Y
 Yang Zing
@@ -661,12 +613,9 @@ Yomi
 Yosenju
 Yubel (archetype)
 Z
-Z-ONE (archetype)
 Zefra
 Zexal
-Zombie counterpart
 Zoodiac
 ZS -
 Zubaba
 ZW -
-∞ (archetype)

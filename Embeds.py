@@ -5,7 +5,7 @@ from operator import methodcaller
 import disnake
 
 import constants
-import queries
+import database
 import utils
 
 
@@ -38,9 +38,6 @@ class EmbedBuilder(disnake.Embed):
         self.color = color
         self.file = file
 
-    def get_file(self):
-        return self.file
-
 
 class InfoEmbedBuilder(EmbedBuilder):
     """The embed builder related to information about the bot and its author.
@@ -69,8 +66,8 @@ class DrawEmbedBuilder(EmbedBuilder):
     def __init__(self, title: str):
         no_artwork = True
         while no_artwork:
-            card_a = queries.random_card()
-            card_b = queries.random_card()
+            card_a = database.random_card()
+            card_b = database.random_card()
             try:
                 utils.join_two_images(card_a["id"], card_b["id"])
                 no_artwork = False
@@ -93,10 +90,11 @@ class GuessEmbedBuilder(EmbedBuilder):
         description: str = "",
         mode: str = "",
     ):
-        card = queries.random_card()
+        card = database.random_card()
         self.card = card
         match mode:
             case "Card Text":
+                thumb = disnake.File("artworks/artwork_81210420.jpg", "thumbnail.jpg")
                 description = card["desc"]
                 description = (
                     description.replace(card["name"], "***Card Name***")
@@ -104,7 +102,7 @@ class GuessEmbedBuilder(EmbedBuilder):
                 )
 
                 super().__init__(
-                    title=title, description=description, color=color, file=file
+                    title=title, description=description, color=color, file=thumb
                 )
                 self.mode = mode
                 super().set_thumbnail(url="attachment://thumbnail.jpg")
@@ -127,16 +125,13 @@ class GuessEmbedBuilder(EmbedBuilder):
                         except FileNotFoundError:
                             continue
                     if error:
-                        card = queries.random_card()
+                        card = database.random_card()
                         self.card = card
                 super().__init__(
                     title=title, description=description, color=color, file=file
                 )
                 self.mode = mode
                 super().set_image(url="attachment://artwork.jpg")
-
-    def get_card(self):
-        return self.card
 
 
 class SearchEmbedBuilder(EmbedBuilder):
@@ -190,10 +185,12 @@ class SearchEmbedBuilder(EmbedBuilder):
             super().set_footer(text=f"Page {page_num}/{max_pages}")
 
     def __parse_card_text(self, card_text, card_type):
+        print(card_text)
         headers = re.findall(r"\[ (.*?) \]", card_text)
-        bodies = re.findall(r"\][\r|\n]*([^\n]*)", card_text)
+        bodies = re.findall(r"\][\r|\n|\s]*([^\[]*)", card_text)
         bodies = list(map(methodcaller("strip", "\r\n"), bodies))
-
+        print(headers)
+        print(bodies)
         if len(bodies) > len(headers):
             joined_body = "\n".join(bodies[len(headers) - 1 :])
             bodies = [bodies[0], joined_body]

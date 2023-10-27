@@ -2,7 +2,7 @@ import disnake
 from disnake.utils import get
 
 import constants
-import queries
+import database
 import utils
 
 
@@ -22,8 +22,13 @@ class CreatePaginator(disnake.ui.View):
     """
 
     def __init__(
-            self, ctx, embeds: list, author: int = 0, size: int = 1,
-            has_dropdown: bool = True):
+        self,
+        ctx,
+        embeds: list,
+        author: int = 0,
+        size: int = 1,
+        has_dropdown: bool = True,
+    ):
         super().__init__()
         self.ctx = ctx
         self.embeds = embeds
@@ -34,15 +39,21 @@ class CreatePaginator(disnake.ui.View):
         self.select = disnake.ui.Select(options=[])
         dict_embed = self.embeds[0].to_dict()
         if self.has_dropdown:
-            for field in dict_embed['fields']:
-                emoji_name = field["value"].split("|")[1].strip(
-                ).lower().replace(" ", "_").replace("-", "_")
+            for field in dict_embed["fields"]:
+                emoji_name = (
+                    field["value"]
+                    .split("|")[1]
+                    .strip()
+                    .lower()
+                    .replace(" ", "_")
+                    .replace("-", "_")
+                )
                 emoji = get(self.ctx.guild.emojis, name=emoji_name)
-                self.select.append_option(disnake.SelectOption(
-                    label=field['name'],
-                    emoji=emoji,
-                    description=field['value']
-                ))
+                self.select.append_option(
+                    disnake.SelectOption(
+                        label=field["name"], emoji=emoji, description=field["value"]
+                    )
+                )
             self.select.callback = self.single_search
             self.add_item(self.select)
 
@@ -53,9 +64,9 @@ class CreatePaginator(disnake.ui.View):
         Args:
             inter:
         """
-        response = queries.query({"name": self.select.values[0]})
+        response = database.query({"name": self.select.values[0]})
         embed = utils.search_wrapper(self.ctx, response)
-        await inter.response.send_message(embed=embed, file=embed.get_file())
+        await inter.response.send_message(embed=embed, file=embed.file)
 
     def out_of_bounds(self, bound: str):
         """Checks if the current index is out of bounds after moving.
@@ -65,7 +76,9 @@ class CreatePaginator(disnake.ui.View):
         Returns: A boolean that is false if the index value is less than the number of pages -1 on the right bound
         or the index value is greater than zero on the left bound.
         """
-        return ((self.index <= 0) and bound == "left") or ((self.index >= self.size - 1) and bound == "right")
+        return ((self.index <= 0) and bound == "left") or (
+            (self.index >= self.size - 1) and bound == "right"
+        )
 
     def draw_dropdown(self):
         """
@@ -75,15 +88,21 @@ class CreatePaginator(disnake.ui.View):
             self.remove_item(self.children[-1])
             self.select = disnake.ui.Select(options=[])
             dict_embed = self.embeds[self.index].to_dict()
-            for field in dict_embed['fields']:
-                emoji_name = field["value"].split("|")[1].strip(
-                ).lower().replace(" ", "_").replace("-", "_")
+            for field in dict_embed["fields"]:
+                emoji_name = (
+                    field["value"]
+                    .split("|")[1]
+                    .strip()
+                    .lower()
+                    .replace(" ", "_")
+                    .replace("-", "_")
+                )
                 emoji = get(self.ctx.guild.emojis, name=emoji_name)
-                self.select.append_option(disnake.SelectOption(
-                    label=field['name'],
-                    emoji=emoji,
-                    description=field['value']
-                ))
+                self.select.append_option(
+                    disnake.SelectOption(
+                        label=field["name"], emoji=emoji, description=field["value"]
+                    )
+                )
             self.select.callback = self.single_search
             self.add_item(self.select)
         return
@@ -94,13 +113,15 @@ class CreatePaginator(disnake.ui.View):
     """
 
     @disnake.ui.button(
-        emoji=constants.emojis["fast_reverse"],
-        style=disnake.ButtonStyle.grey)
+        emoji=constants.emojis["fast_reverse"], style=disnake.ButtonStyle.grey
+    )
     async def rewind(self, button, inter):
         if self.out_of_bounds("left"):
             return await inter.send("You are on the first page.", ephemeral=True)
         elif inter.author.id != self.author and self.author != 0:
-            return await inter.send("You cannot interact with these buttons.", ephemeral=True)
+            return await inter.send(
+                "You cannot interact with these buttons.", ephemeral=True
+            )
         elif self.index >= 10:
             self.index -= 10
             self.draw_dropdown()
@@ -110,46 +131,54 @@ class CreatePaginator(disnake.ui.View):
             self.draw_dropdown()
             await inter.response.edit_message(embed=self.embeds[self.index], view=self)
 
-    @disnake.ui.button(emoji=constants.emojis["reverse"],
-                       style=disnake.ButtonStyle.grey)
+    @disnake.ui.button(
+        emoji=constants.emojis["reverse"], style=disnake.ButtonStyle.grey
+    )
     async def previous(self, button, inter):
         if self.out_of_bounds("left"):
             return await inter.send("You are on the first page.", ephemeral=True)
         elif inter.author.id != self.author and self.author != 0:
-            return await inter.send("You cannot interact with these buttons.", ephemeral=True)
+            return await inter.send(
+                "You cannot interact with these buttons.", ephemeral=True
+            )
         else:
             self.index -= 1
             self.draw_dropdown()
             await inter.response.edit_message(embed=self.embeds[self.index], view=self)
 
     @disnake.ui.button(
-        emoji=constants.emojis["wastebasket"],
-        style=disnake.ButtonStyle.red)
+        emoji=constants.emojis["wastebasket"], style=disnake.ButtonStyle.red
+    )
     async def delete(self, button, inter):
         if inter.author.id != self.author and self.author != 0:
-            return await inter.send("You cannot interact with these buttons.", ephemeral=True)
+            return await inter.send(
+                "You cannot interact with these buttons.", ephemeral=True
+            )
         return await inter.message.delete()
 
-    @disnake.ui.button(emoji=constants.emojis["play"],
-                       style=disnake.ButtonStyle.grey)
+    @disnake.ui.button(emoji=constants.emojis["play"], style=disnake.ButtonStyle.grey)
     async def next(self, button, inter):
         if self.out_of_bounds("right"):
             return await inter.send("You are on the last page.", ephemeral=True)
         elif inter.author.id != self.author and self.author != 0:
-            return await inter.send("You cannot interact with these buttons.", ephemeral=True)
+            return await inter.send(
+                "You cannot interact with these buttons.", ephemeral=True
+            )
         else:
             self.index += 1
             self.draw_dropdown()
             await inter.response.edit_message(embed=self.embeds[self.index], view=self)
 
     @disnake.ui.button(
-        emoji=constants.emojis["fast_forward"],
-        style=disnake.ButtonStyle.grey)
+        emoji=constants.emojis["fast_forward"], style=disnake.ButtonStyle.grey
+    )
     async def skip(self, button, inter):
         if self.out_of_bounds("right"):
             return await inter.send("You are on the last page.", ephemeral=True)
         elif inter.author.id != self.author and self.author != 0:
-            return await inter.send("You cannot interact with these buttons.", ephemeral=True)
+            return await inter.send(
+                "You cannot interact with these buttons.", ephemeral=True
+            )
         elif self.index <= self.size - 11:
             self.index += 10
             self.draw_dropdown()
