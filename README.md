@@ -38,6 +38,6 @@ Please report any problems you have using the Issues tab on GitHub. Any spaghett
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
-### A note about card artworks
-This bot will probably be hosted on a local computer for the time being. Card images are not on this repository, I do not own them. There's a message inside the artworks folder talking about card artworks as and what you can do to easily download the images yourself.
+## A note about card artworks
+This bot will probably be hosted on a local computer for the time being. Card images are not on this repository, I do not own them. There's a message inside the artworks folder talking about card artworks and what you can do to easily download the images yourself.
 
