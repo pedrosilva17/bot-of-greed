@@ -64,15 +64,9 @@ class InfoEmbedBuilder(EmbedBuilder):
 
 class DrawEmbedBuilder(EmbedBuilder):
     def __init__(self, title: str):
-        no_artwork = True
-        while no_artwork:
-            card_a = database.random_card()
-            card_b = database.random_card()
-            try:
-                utils.join_two_images(card_a["id"], card_b["id"])
-                no_artwork = False
-            except FileNotFoundError:
-                pass
+        card_a = database.random_card()
+        card_b = database.random_card()
+        utils.join_two_cards(card_a["id"], card_b["id"])
 
         file = disnake.File("output/two_cards.jpg", filename="two_cards.jpg")
 

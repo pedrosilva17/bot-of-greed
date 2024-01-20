@@ -140,5 +140,6 @@ emojis/
 .idea/
 todo.txt
 !artworks/README.md
+!artworks/artwork_back.jpg
 !card_images/README.md
 card-database.db

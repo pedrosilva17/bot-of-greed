@@ -186,18 +186,24 @@ def get_color_by_type(_type):
     return color
 
 
-def join_two_images(im1, im2):
+def join_two_cards(im1, im2, folder="card_images"):
     """
-    Join two images side-by-side into a single file. Useful for embeds.
+    Join two cards side-by-side into a single file. Useful for embeds.
     Parameters:
     -----------
-    :param im1: The image that will appear on the left.
-    :param im2: The image that will appear on the right.
+    :param im1: The card that will appear on the left.
+    :param im2: The card that will appear on the right.
     """
-
-    i1 = Image.open(f"card_images/{im1}.jpg")
+    try:
+        i1 = Image.open(f"{folder}/{im1}.jpg")
+    except FileNotFoundError:
+        i1 = Image.open(f"artworks/artwork_back.jpg")
     i1 = i1.resize((421, 614), Image.ANTIALIAS)
-    i2 = Image.open(f"card_images/{im2}.jpg")
+
+    try:
+        i2 = Image.open(f"{folder}/{im2}.jpg")
+    except FileNotFoundError:
+        i2 = Image.open(f"artworks/artwork_back.jpg")
     i2 = i2.resize((421, 614), Image.ANTIALIAS)
 
     draw = Image.new("RGB", (i1.width + i2.width, max(i1.height, i2.height)))
